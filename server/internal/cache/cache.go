@@ -41,11 +41,8 @@ func (c *LRUCache) Set(key string, value interface{}, duration time.Duration) {
     c.Mutex.Lock()
     defer c.Mutex.Unlock()
 
-    if elem, found := c.Cache[key]; found {
-        c.LRUList.MoveToFront(elem)
-        elem.Value.(*structs.CacheItem).Value = value
-        elem.Value.(*structs.CacheItem).Expiration = time.Now().Add(duration).UnixNano()
-        return
+    if _, found := c.Cache[key]; found {
+        c.Delete(key)
     }
 
     item := &structs.CacheItem{
