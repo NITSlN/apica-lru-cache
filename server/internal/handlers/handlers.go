@@ -14,6 +14,7 @@ import (
 // GetHandler handles the GET requests to retrieve a value from the cache.
 func GetHandler(c *cache.LRUCache) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
+        defer r.Body.Close()
         vars := mux.Vars(r)
         key := vars["key"]
 
@@ -46,6 +47,8 @@ func GetHandler(c *cache.LRUCache) http.HandlerFunc {
 // SetHandler handles the POST requests to set a value in the cache.
 func SetHandler(c *cache.LRUCache) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
+        defer r.Body.Close()
+
         var requestData structs.SetRequest
 
         if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
@@ -70,6 +73,7 @@ func SetHandler(c *cache.LRUCache) http.HandlerFunc {
 // DeleteHandler handles the DELETE requests to remove a value from the cache.
 func DeleteHandler(c *cache.LRUCache) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
+        defer r.Body.Close()
         vars := mux.Vars(r)
         key := vars["key"]
 
