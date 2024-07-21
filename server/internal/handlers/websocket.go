@@ -1,12 +1,14 @@
 package handlers
 
 import (
-	"lru-cache/internal/cache"
-	"lru-cache/internal/structs"
-	"net/http"
-	"time"
+    "fmt"
+    "net/http"
+    "time"
 
-	"github.com/gorilla/websocket"
+    "lru-cache/internal/cache"
+    "lru-cache/internal/structs"
+
+    "github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -28,23 +30,29 @@ func WebSocketHandler(c *cache.LRUCache) http.HandlerFunc {
 
         for {
             c.Mutex.Lock()
-            currentItems := make(map[string]interface{})
+            var currentItems []map[string]interface{}
             now := time.Now().UnixNano()
-            for key, elem := range c.Cache {
-                item := elem.Value.(*structs.CacheItem)
-				if item.Expiration > now {
-					currentItems[key] = map[string]interface{}{
-						"value":      item.Value,
-						"expiration": (item.Expiration - now) / int64(time.Second),
-					}
-				} else {
-					// Remove expired item
-					c.LRUList.Remove(elem)
-					delete(c.Cache, key)
-				}
+
+            for e := c.LRUList.Front(); e != nil; {
+                next := e.Next()
+                item := e.Value.(*structs.CacheItem)
+                if item.Expiration > now {
+                    currentItems = append(currentItems, map[string]interface{}{
+                        "key":        item.Key,
+                        "value":      item.Value,
+                        "expiration": (item.Expiration - now) / int64(time.Second),
+                    })
+                } else {
+                    // Remove expired item
+                    c.LRUList.Remove(e)
+                    delete(c.Cache, item.Key)
+                }
+                e = next
             }
+
             c.Mutex.Unlock()
 
+            fmt.Println(currentItems)
             if err := conn.WriteJSON(currentItems); err != nil {
                 return
             }

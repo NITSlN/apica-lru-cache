@@ -3,8 +3,8 @@ import useWebSocket from "react-use-websocket";
 import CacheItem from "./CacheItem";
 
 const CacheList = () => {
-  const [cacheData, setCacheData] = useState({});
-  const { sendMessage, lastMessage, readyState } = useWebSocket(
+  const [cacheData, setCacheData] = useState([]);
+  const { lastMessage, getWebSocket } = useWebSocket(
     "ws://127.0.0.1:8000/ws"
   );
 
@@ -18,6 +18,15 @@ const CacheList = () => {
       }
     }
   }, [lastMessage]);
+
+  useEffect(() => {
+    return () => {
+      const ws = getWebSocket();
+      if (ws) {
+        ws.close();
+      }
+    };
+  }, [getWebSocket]);
 
   return (
     <div className="">
