@@ -2,13 +2,15 @@ package main
 
 import (
 	"log"
+	"lru-cache/internal/cache"
+	"lru-cache/internal/router"
 	"net/http"
 	"time"
 )
 
 func main() {
-	cache := NewLRUCache()
-	r := NewRouter(cache)
+	cache := cache.NewLRUCache()
+	r := router.NewRouter(cache)
 
 	srv := &http.Server{
 		Handler:      r,
