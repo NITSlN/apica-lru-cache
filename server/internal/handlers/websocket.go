@@ -51,8 +51,6 @@ func WebSocketHandler(c *cache.LRUCache) http.HandlerFunc {
             }
 
             c.Mutex.Unlock()
-
-            fmt.Println(currentItems)
             if err := conn.WriteJSON(currentItems); err != nil {
                 return
             }
