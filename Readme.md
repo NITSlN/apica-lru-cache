@@ -4,8 +4,8 @@ This project implements an LRU (Least Recently Used) cache with a Go backend and
 
 ## Project Structure
 
-- **backend**: Contains the Go backend implementation.
-- **frontend**: Contains the React frontend implementation.
+- **server**: Contains the Go backend implementation.
+- **client**: Contains the React frontend implementation.
 
 ## Features
 
