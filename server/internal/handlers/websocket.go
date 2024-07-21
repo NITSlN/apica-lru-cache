@@ -29,12 +29,19 @@ func WebSocketHandler(c *cache.LRUCache) http.HandlerFunc {
         for {
             c.Mutex.Lock()
             currentItems := make(map[string]interface{})
+            now := time.Now().UnixNano()
             for key, elem := range c.Cache {
                 item := elem.Value.(*structs.CacheItem)
-                currentItems[key] = map[string]interface{}{
-                    "value":      item.Value,
-                    "expiration": item.Expiration,
-                }
+				if item.Expiration > now {
+					currentItems[key] = map[string]interface{}{
+						"value":      item.Value,
+						"expiration": (item.Expiration - now) / int64(time.Second),
+					}
+				} else {
+					// Remove expired item
+					c.LRUList.Remove(elem)
+					delete(c.Cache, key)
+				}
             }
             c.Mutex.Unlock()
 
