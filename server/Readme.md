@@ -18,7 +18,7 @@
 3. **Run the server:**
 
     ```sh
-    go run
+    go run main.go cache.go handlers.go router.go structs.go websocket.go
     ```
 
 ## API Endpoints
