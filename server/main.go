@@ -1,7 +1,23 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+	"time"
+)
 
 func main() {
-    fmt.Println("Hello, World!")
+	cache := NewLRUCache()
+	r := NewRouter(cache)
+
+	srv := &http.Server{
+		Handler:      r,
+		Addr:         "127.0.0.1:8000",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Fatalf("Server error: %v", err)
+	}
 }
