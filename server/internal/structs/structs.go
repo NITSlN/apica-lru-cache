@@ -12,3 +12,9 @@ type SetRequest struct {
     Value      interface{} `json:"value"`
     Expiration int         `json:"expiration"` // in seconds
 }
+
+type Response struct {
+    Status  string      `json:"status"`
+    Message string      `json:"message"`
+    Data    interface{} `json:"data,omitempty"`
+}
